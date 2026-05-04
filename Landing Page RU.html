@@ -296,6 +296,89 @@
     .faq-item .answer{ padding-bottom: 30px; padding-left: 56px; font-size: 17px; }
   }
 </style>
+
+<!-- ═══════════════════════════════════════════════════
+     ANALYTICS — загрузка GA4 без согласия, Meta Pixel — по согласию
+  ═══════════════════════════════════════════════════ -->
+<script>
+(function(){
+  const COOKIE_KEY = 'cookie_consent';
+  const GA_ID      = 'G-ZTBSPFSTPC';   /* ← reemplazá */
+  const META_ID    = 'XXXXXXXXXXXXXXX'; /* ← reemplazá */
+
+  function loadGA(){
+    if(window.__ga_loaded) return;
+    window.__ga_loaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    gtag('js', new Date());
+    gtag('config', GA_ID, {anonymize_ip: true});
+  }
+
+  function loadMeta(){
+    if(window.__meta_loaded) return;
+    window.__meta_loaded = true;
+    !function(f,b,e,v,n,t,s){
+      if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)
+    }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', META_ID);
+    fbq('track', 'PageView');
+  }
+
+  function applyConsent(value){
+    localStorage.setItem(COOKIE_KEY, value);
+    var banner = document.getElementById('cookie-banner');
+    if(banner) banner.style.display = 'none';
+    if(value === 'accepted'){ loadMeta(); }
+  }
+
+  window.__applyConsent = applyConsent;
+
+  // GA4 carga siempre (datos anónimos, sin PII)
+  loadGA();
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var saved = localStorage.getItem(COOKIE_KEY);
+    if(saved){ if(saved === 'accepted'){ loadMeta(); } return; }
+    var banner = document.getElementById('cookie-banner');
+    if(banner) banner.style.display = 'flex';
+  });
+})();
+</script>
+
+<!-- Баннер cookies — Ley 25.326 Argentina -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;
+  background:#1a110a;color:#f4e8d2;padding:16px 20px;
+  align-items:center;justify-content:space-between;gap:16px;
+  flex-wrap:wrap;font-family:Inter,sans-serif;font-size:14px;line-height:1.5;
+  box-shadow:0 -4px 24px rgba(0,0,0,.35);">
+  <p style="margin:0;max-width:640px;">
+    Usamos cookies propias y de terceros (Google Analytics, Meta) para mejorar la experiencia y medir el tráfico.
+    Podés aceptar o rechazar su uso en cualquier momento.
+    <a href="/aviso-privacidad" style="color:#D4B896;text-decoration:underline;">Más info</a>
+  </p>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button onclick="window.__applyConsent('rejected')"
+      style="padding:8px 18px;border:1px solid rgba(212,184,150,.4);border-radius:6px;
+      background:transparent;color:#D4B896;cursor:pointer;font-size:14px;white-space:nowrap;">
+      Отклонить
+    </button>
+    <button onclick="window.__applyConsent('accepted')"
+      style="padding:8px 18px;border-radius:6px;
+      background:#D4B896;color:#1a110a;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;">
+      Принять
+    </button>
+  </div>
+</div>
 </head>
 
 <body class="kraft-paper antialiased">

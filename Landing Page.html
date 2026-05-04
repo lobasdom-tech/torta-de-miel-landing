@@ -975,14 +975,17 @@
     localStorage.setItem(COOKIE_KEY, value);
     var banner = document.getElementById('cookie-banner');
     if(banner) banner.style.display = 'none';
-    if(value === 'accepted'){ loadGA(); loadMeta(); }
+    if(value === 'accepted'){ loadMeta(); }
   }
 
   window.__applyConsent = applyConsent;
 
+  // GA4 carga siempre (datos anónimos, sin PII)
+  loadGA();
+
   document.addEventListener('DOMContentLoaded', function(){
     var saved = localStorage.getItem(COOKIE_KEY);
-    if(saved){ if(saved === 'accepted'){ loadGA(); loadMeta(); } return; }
+    if(saved){ if(saved === 'accepted'){ loadMeta(); } return; }
     var banner = document.getElementById('cookie-banner');
     if(banner) banner.style.display = 'flex';
   });
